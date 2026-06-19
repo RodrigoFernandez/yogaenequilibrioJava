@@ -3,6 +3,7 @@ package com.yogaenequilibrio.ecommerce.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +29,10 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public Producto obtenerPorId(@PathVariable Integer id) {
-        return productoService.obtenerPorId(id);
+    public ResponseEntity<Producto> obtenerPorId(@PathVariable Integer id) {
+        return productoService.obtenerPorId(id)
+                                .map(ResponseEntity::ok)
+                                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -38,12 +41,16 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public Producto actualizar(@PathVariable Integer id, @RequestBody Producto producto) {
-        return productoService.actualizar(id, producto);
+    public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody Producto producto) {
+        return productoService.actualizar(id, producto)
+                                .map(ResponseEntity::ok)
+                                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Integer id) {
-        productoService.eliminar(id);
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        return productoService.eliminar(id).isPresent()
+                                ? ResponseEntity.noContent().build()
+                                : ResponseEntity.notFound().build();
     }
 }

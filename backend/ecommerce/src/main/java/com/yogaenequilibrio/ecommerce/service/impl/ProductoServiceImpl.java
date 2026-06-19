@@ -1,6 +1,7 @@
 package com.yogaenequilibrio.ecommerce.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public Producto obtenerPorId(Integer id) {
-        return productoRepository.findById(id).orElse(null);
+    public Optional<Producto> obtenerPorId(Integer id) {
+        return productoRepository.findById(id);
     }
 
     @Override
@@ -31,17 +32,22 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public Producto actualizar(Integer id, Producto producto) {
+    public Optional<Producto> actualizar(Integer id, Producto producto) {
         if (productoRepository.existsById(id)) {
             producto.setId(id);
-            return productoRepository.save(producto);
+            return Optional.of(productoRepository.save(producto));
         }
         
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public void eliminar(Integer id) {
-        productoRepository.deleteById(id);
+    public Optional<Boolean> eliminar(Integer id) {
+        if (productoRepository.existsById(id)) {
+            productoRepository.deleteById(id);
+            return Optional.of(true);
+        }
+        
+        return Optional.empty();
     }
 }
